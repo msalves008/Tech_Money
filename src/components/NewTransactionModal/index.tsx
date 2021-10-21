@@ -22,14 +22,19 @@ export function NewTransactionModal({isOpen, onRequestClose}: NewTransactionModa
   
 
   
-  function handleCreateNewTransaction(event: FormEvent) {
+  async function handleCreateNewTransaction(event: FormEvent) {
     event.preventDefault(); // bloqueando refresh da pagina depois de enviar o formulario
-    createTransaction({
+    await createTransaction({
       title,
       amount,
       category,
       type
-    })
+    }) 
+    setTitle('');
+    setAmount(0);
+    setCategory('');
+    setType('deposit');
+    onRequestClose();
   }
   return (
     <Modal           

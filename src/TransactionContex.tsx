@@ -20,7 +20,7 @@ type TransactionInput = Omit<Transaction, 'id'| 'createdAt'>;
 
 interface TransactionsContextData{
   transactions: Transaction[];
-  createTransaction: (transaction: TransactionInput) => void;
+  createTransaction: (transaction: TransactionInput) => Promise<void>;
 }
 
 export const TransactionsContext = createContext<TransactionsContextData>(
@@ -36,16 +36,23 @@ export function TransactionsProvider({children}: TransactionsProviderProps){
 			.then(response => setTransactions(response.data.transactions));
 	}, []);
 
-  function createTransaction(transaction: TransactionInput){  
-    api.post('/transactions', transaction)
+  async function createTransaction(transactionInput: TransactionInput){  
+    const response = await api.post('/transactions', {      
+      ...transactionInput,
+      createdAt: new Date()
+    })
+    const { transaction } = response.data; 
+    setTransactions([
+      ...transactions,
+         transaction
+    ])
   }
-
-  
-
   return(
     <TransactionsContext.Provider value={{ transactions, createTransaction}}>
       {children}
     </TransactionsContext.Provider>
   );
-  //https://github.com/pagseguromaster/plugpag/tree/master/1.x/demos/Linux
-}
+
+
+
+ }
